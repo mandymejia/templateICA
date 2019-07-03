@@ -1,4 +1,4 @@
-function [A, W, S, skew, iq] = icatb_calculateICA_mandy(Y, Q, nvox)
+function [A, W, S, skew, iq] = icatb_calculateICA_templateICA(Y, Q, nvox)
 
 % ICA is performed on the reduced data set
 % Inputs:  1) Y: single-subject data matrix of size TxV

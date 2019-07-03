@@ -22,11 +22,26 @@ function [S, A, dat_ctr] = dual_reg(dat, S_grp)
 	if(Q > T) warning('More ICs than time points. Are you sure?'); end
 	if(V ~= size(S_grp, 2)) error('The number of voxels in dat and S_grp must match'); end
 
-	dat_ctr = zscore(dat); %center and scale each voxel time series
-	dat_ctr = (dat_ctr' - mean(dat_ctr'))'; %center each time point 
+	%center timeseries data across space and time and standardize scale
+	dat = dat - mean(dat); %center each voxel time series (centering across time)
+	dat_t = dat'; %transpose image matrix
+  	sig = sqrt(mean(var(dat_t))); %variance across image, averaged across time, square root to get SD
+  	dat = (dat_t - mean(dat_t))'; %center each image (centering across space)
+  	dat = dat./sig; %standardize by global SD
+  	dat_ctr = dat;
+
+  	%center group ICs over voxels
 	S_grp = (S_grp' - mean(S_grp'));
-	S_grpt = S_grp';
-	A = dat_ctr * S_grp * inv(S_grpt * S_grp);
+	S_grp_t = S_grp';
+
+	%estimate A (IC timeseries)
+	A = dat_ctr * S_grp * inv(S_grp_t * S_grp);  
+	%fix scale of timeseries
+	sd_A = std(A); 
+	D = diag(1./sd_A);
+  	A = A * D;
+
+	%estimate S (IC maps)
 	S = inv(A' * A) * (A' * dat_ctr);
 
 end

@@ -1,31 +1,47 @@
-function [H, D, U, sigma_sq, q] = dim_reduce(vectors, q)
+function [Y_new, H, Hinv, D, U, sigma_sq, C_diag, Q] = dim_reduce(Y, Q)
 	%USAGE
 	%
-	% [H, D, U, sigma_sq, q] = dim_reduce(vectors, q)
-	% [H, D, U, sigma_sq, q] = dim_reduce(vectors, 0) to estimate q
+	% [Y_new, H, Hinv, D, U, sigma_sq, C_diag] = dim_reduce(Y, Q)
+	% [Y_new, H, Hinv, D, U, sigma_sq, C_diag, Q] = dim_reduce(Y, 0) to estimate Q
 	%
 	% ARGUMENTS
 	%
-	% vectors	Data in row vectors (obs x variables)
-	% q 		Number of dimensions to retain, or 0 if estimated
+	% Y (TxV) – BOLD data
+	% Q 	  – Number of dimensions to retain, or 0 if to be estimated
+    %
+    % RETURNS
+    %
+    % Y_new (QxV) – dimension-reduced data 
+    % H (QxT)     - dimension reduction / prewhitening matrix
+    % Hinv (TxQ)  - reverse dimension reduction matrix
+    % D (Qx1)     - diagonals of D matrix from SVD 
+    % U (TxQ)     - U matrix from SVD
+    % sigma_sq    - residual variance, based on last T-Q eigenvals
+    % C_diag (Qx1)- diagonals of residual cov matrix in ICA model
+    % Q           - dimensionality (specified or estimated)
 
-	p = size(vectors, 2); %number of variables
-	n = size(vectors, 1); %number of observations
+	V = size(Y, 2); 
+	T = size(Y, 1); 
 
 	% perform PCA
-    [U_all, D_all] = pcamat(vectors, 1, n, 'off', 'off'); 
+    [U_all, D_all] = pcamat(Y, 1, T, 'off', 'off'); 
     [lambda,o] = sort(diag(D_all),'descend'); %sort eigenvalues
 
     %estimate dimensionality
-    if(q==0)
-    	[q, ~] = laplace_pca([], lambda, p, n);
+    if(Q==0)
+    	[Q, ~] = laplace_pca([], lambda, V, T);
     end
 
     %apply dimension reduction
-    inds = o(1:q); % indices of largest q eigenvecs
-    U = U_all(:,inds); % U matrix (n x q)
-    D = diag(D_all(inds, inds)); % diagonals of D matrix (q x q)
-    sigma_sq = mean(lambda((q+1):length(lambda))); % residual variance
-    H = diag((D - sigma_sq).^(-1/2)) * U'; % prewhitening matrix
+    inds = o(1:Q); % indices of largest Q eigenvecs
+    U = U_all(:,inds); % U matrix (T x Q)
+    D = diag(D_all(inds, inds)); % diagonals of D matrix (Q x Q)
+    sigma_sq = mean(lambda((Q+1):length(lambda))); % residual variance
+    H = diag((D - sigma_sq).^(-1/2)) * U'; % prewhitening matrix (Q x T)
+    Y_new = H * Y;
+    
+    %other things needed for ICA model
+    C_diag = (D - sigma_sq).^(-1); % residual covariance
+    Hinv = U * diag((D - sigma_sq)).^(1/2); %reverse dimension reduction matrix
 
 end
