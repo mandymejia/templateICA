@@ -116,17 +116,28 @@ theta0.nu0_sq = sigma2_ML;
 %Run EM algorithm
 maxiter = 100;
 epsilon = .005;
-[theta, S, S_var, success] = EM_easy(template_mean, template_var, ts_nonuis2, theta0, C_diag, maxiter, epsilon)
+[theta, S, S_var, success] = EM_easy(template_mean, template_var, ts_nonuis2, theta0, C_diag, maxiter, epsilon);
 A = Hinv * theta.A; %apply reverse dimension reduction 
 
 %S (QxV) contains the template IC estimates 
 %A (TxQ) contains the template IC timeseries 
 
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% WRITE OUT ESTIMATES AS A CIFTI TIMESERIES FILE
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+%https://github.com/Washington-University/HCPpipelines/tree/master/global/matlab
+addpath(genpath('~/matlab_toolboxes/gifti-1.6/'))
+addpath('~/matlab_toolboxes/cifti/') %ciftiopen, ciftisave, ciftisavereset
+wb_cmd = '~/workbench/bin_rh_linux64/wb_command';
 
-
-
+cd(data_dir)
+cd(newsubj_dir)
+S_cifti = ciftiopen(fname_ts1);
+S_cifti.cdata = S_cifti.cdata(:,1:Q).*0;
+S_cifti.cdata = S';
+ciftisavereset(S_cifti, 'S.dscalar.nii', wb_cmd)
 
 
 
