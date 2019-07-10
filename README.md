@@ -1,5 +1,6 @@
 # templateICA
 MATLAB toolbox implementing template independent component analysis
+
 Requires the [cifti-matlab repository](https://github.com/Washington-University/cifti-matlab) to read and write cifti files. If running the Fast Two-Stage EM algorithm, requires the [Group ICA of fMRI Toolbox](http://mialab.mrn.org/software/gift) to estimate nuisance ICs a-priori. 
 
 ## EM subdirectory
