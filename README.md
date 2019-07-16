@@ -1,5 +1,6 @@
 # templateICA
 MATLAB toolbox implementing template independent component analysis
+
 These files support the working manuscript [Template Independent Component Analysis: Targeted and Reliable Estimation of Subject-level Brain Networks using Big Data Population Priors](https://arxiv.org/abs/1906.07294)
 
 Requires the [cifti-matlab repository](https://github.com/Washington-University/cifti-matlab) to read and write cifti files. If running the Fast Two-Stage EM algorithm, requires the [Group ICA of fMRI Toolbox](http://mialab.mrn.org/software/gift) to estimate nuisance ICs a-priori. 
