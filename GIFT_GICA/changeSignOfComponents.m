@@ -9,7 +9,7 @@ for compNum = 1:numOfIC
     skew(compNum) = icatb_skewness(v) + eps;
     clear v;
     if (sign(skew(compNum)) == -1)
-        disp(['Changing sign of component ',num2str(compNum)]);
+        %disp(['Changing sign of component ',num2str(compNum)]);
         icasig(compNum, :) = icasig(compNum, :)*-1;
         A(:, compNum) = A(:, compNum)*-1;
     end
