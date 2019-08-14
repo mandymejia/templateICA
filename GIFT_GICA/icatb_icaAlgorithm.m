@@ -51,7 +51,7 @@ if (nargin > 0 && nargin <= 3)
     % get the ica algorithm
     if isnumeric(ica_algorithm)
         if ica_algorithm > size(icaAlgo, 1)
-            disp(['Selected algorithm number is : ', num2str(size(icaAlgo, 1)), '. Presently there are ', ...
+            %disp(['Selected algorithm number is : ', num2str(size(icaAlgo, 1)), '. Presently there are ', ...
                 num2str(size(icaAlgo, 1)), ' algorithms. By default selecting the first algorithm.']);
             ica_algorithm = 1;
         end
@@ -59,13 +59,13 @@ if (nargin > 0 && nargin <= 3)
     elseif ischar(ica_algorithm)
         selected_ica_algorithm = lower(deblank(ica_algorithm));
         if (strcmpi(selected_ica_algorithm, 'fbss'))
-            disp('FBSS algorithm name is changed to ERBM');
+            %disp('FBSS algorithm name is changed to ERBM');
             % fbss name is changed to erbm
             selected_ica_algorithm = 'erbm';
         end
         matchIndex = strmatch(selected_ica_algorithm, lower(icaAlgo), 'exact');
         if isempty(matchIndex)
-            disp('Algorithm specified is not in the available ICA algorithms. By default selecting the first algorithm.');
+            %disp('Algorithm specified is not in the available ICA algorithms. By default selecting the first algorithm.');
             selected_ica_algorithm = lower(deblank(icaAlgo(1, :)));
         end
     end
@@ -190,7 +190,7 @@ if (nargin > 0 && nargin <= 3)
         case 'iva-gl'
             
             %% IVA
-            disp('Computing second order IVA ...');
+%             %disp('Computing second order IVA ...');
             if (isempty(ICA_Options))
                 ICA_Options = {'maxIter', 1024, 'termThreshold', 1e-4, 'alpha0', 0.2, 'verbose', true};
             end
@@ -221,7 +221,7 @@ if (nargin > 0 && nargin <= 3)
             
             W = icatb_iva_second_order(data, secondOrderOpts{:});
             ICA_Options(end+1:end+4) = {'whiten', false, 'initW', W};
-            disp('Weights from second order IVA are used as initial weights in laplacian IVA. Computing laplacian IVA ...');
+            %disp('Weights from second order IVA are used as initial weights in laplacian IVA. Computing laplacian IVA ...');
             W = icatb_iva_laplace(data, ICA_Options{:}); % run iva-l, initialized with iva-g result
             
             [W, A, icasig_tmp] = correct_sign(W, data);
@@ -254,7 +254,7 @@ if (nargin > 0 && nargin <= 3)
             if (strcmpi(initType, 'gpca'))
                 %% Initialize IVA-L using weights from group PCA
                 
-                disp('Computing group PCA on data ...');
+                %disp('Computing group PCA on data ...');
                 GA = doSecondPCAStep(data);
                 eS = 0;
                 WI = zeros(size(data, 1), size(data, 1), size(data, 3));
@@ -269,7 +269,7 @@ if (nargin > 0 && nargin <= 3)
             end
             
             ICA_Options(end+1:end+4) = {'whiten', false, 'initW', WI};
-            disp('Weights from group PCA are used as initial weights in laplacian IVA. Computing laplacian IVA ...');
+            %disp('Weights from group PCA are used as initial weights in laplacian IVA. Computing laplacian IVA ...');
             W = icatb_iva_laplace(data, ICA_Options{:}); % run iva-l
             [W, A, icasig_tmp] = correct_sign(W, data);
             

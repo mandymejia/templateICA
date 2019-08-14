@@ -40,7 +40,9 @@ algoVal = 1; % algorithm index
 algorithmName = deblank(icaAlgo(algoVal, :));
 
 % Modality type
-[modalityType, dataTitle, compSetFields] = icatb_get_modality;
+modalityType = 'fMRI';
+dataTitle = 'Functional';
+compSetFields = {'ic', 'tc'};
 
 sesInfo.num_runs_gica = 1;
 

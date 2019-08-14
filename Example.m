@@ -1,6 +1,6 @@
 addpath(genpath('~/matlab_toolboxes/cifti-matlab/'))
 addpath(genpath('~/matlab_toolboxes/templateICA/'))
-addpath(genpath('~/matlab_toolboxes/GroupICATv4.0b/')) %for GIFT
+addpath(genpath('~/matlab_toolboxes/GroupICATv4.0b/icatb')) %for GIFT
 
 data_dir = '/path/to/timeseries/'
 GICA_dir = '/path/to/groupICs/'
@@ -93,7 +93,7 @@ ts_resid = ts - A_DR * S_DR;
 strcat(num2str(Q2),' nuisance components') 
 
 %Run GIFT to estimate nuisance ICs
-[A_nuis, W, S_nuis, skew, iq] = icatb_calculateICA_templateICA(ts_resid, Q2, V);
+[A_nuis, W, S_nuis, skew, iq] = icatb_calc_nuisanceICs(ts_resid, Q2, V);
 sd_A = std(A_nuis); %determine scale of A
 A_nuis = A_nuis * diag(1./sd_A); %rescale A
 S_nuis = diag(sd_A) * S_nuis; %rescale S
