@@ -11,7 +11,7 @@ Contains all functions for running the exact, subspace, and fast versions of the
 ## GIFT_GICA subdirectory
 Contains functions for estimating nuisance ICs apriori
 
-### templateICA_calc_nuisanceICs.m - helper function 
+### icatb_calc_nuisanceICs.m - helper function 
 Called by Example.m
 
 Estimates nuisance ICs a-priori using the Infomax algorithm and the ICASSO toolbox with randomized initial conditions to ensure stable ICs. 
