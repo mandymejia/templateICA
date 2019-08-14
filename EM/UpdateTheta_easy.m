@@ -26,7 +26,7 @@ function [theta_new, subICmean, subICvar] = UpdateTheta_easy (Y, theta, C_matrix
 % First calculate the posterior probability of ICs, conditional on current parameter values
 
 V = size(Y, 2);
-Q = size(Y,1); 
+Q = size(Y, 1); 
 
 theta_new.A         = zeros(Q, Q);
 theta_new.nu0_sq    = 0;
@@ -88,34 +88,6 @@ theta_new.A = A_ProdPart1 * inv(A_ProdPart2); %new Ai
 P = real(inv((theta_new.A' * theta_new.A)^(1/2))); 
 theta_new.A = theta_new.A * P; % symmetric orthogonalization
 
-% %%% MULTIPLY THE S MATRIX WITH P^(-1)
-% Pinv = inv(P);
-% Pinvt = Pinv';
-% subICmean = Pinv * subICmean;
-% for v = 1:V
-%     subICvar(:,:,v) = Pinv * subICvar(:,:,v) * Pinvt;
-% end
-
-
-% %%% MAKE SURE IC ESTIMATES HAVE MEAN = 0 and VAR = 1
-
-% %divide each IC subICmean by its standard deviation
-% vars = var(subICmean,0,2);
-% vars_mat = repmat(vars, [1, V]);
-% subICmean = subICmean./sqrt(vars_mat);
-
-% %scale covariance accordingly
-% covars_mat = sqrt(vars) * sqrt(vars');
-% covars_arr = repmat(covars_mat, [1, 1, V]);
-% subICvar = subICvar./covars_arr;
-
-% %scale the mixing matrix accordingly
-% vars_mat2 = repmat(vars', [Q, 1]);
-% theta_new.A = theta_new.A .* sqrt(vars_mat2);
-
-
-% sd_A = std(Hinv * theta_new.A); %determine scale of A after reverse-prewhitening
-% theta_new.A = theta_new.A * diag(1./sd_A); %standardize scale
 
 
 

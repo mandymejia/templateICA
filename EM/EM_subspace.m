@@ -74,13 +74,9 @@ while err > epsilon
     itr = itr + 1;
     if ( itr > maxiter )
         success=0; disp('Fail to converge within given number of iteration!');
-        %subICmean_orth = O_inv * subICmean; %rotate final estimate of S
         return;
     end;
 end;
-
-% %rotate final estimate of S using inverse of orthonormalization matrix applied to A
-% subICmean_orth = O_inv * subICmean;
 
 end
 

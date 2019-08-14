@@ -54,8 +54,6 @@ C_inv = diag(1./C_matrix_diag); %QxQ
 Sigma0     =   diag(C_matrix_diag.*theta.nu0_sq); %first-level covariance matrix
 Sigma0_inv = diag(1./diag(Sigma0));  %first-level inverse covariance matrix
 
-%Ying's Approach: Background MoG component = 1
-%Assume at most one IC is activated (MoG != 1)
 
 % %%%%% dictionary for the z(v)s: 
 
@@ -75,11 +73,6 @@ Sigma0_inv = diag(1./diag(Sigma0));  %first-level inverse covariance matrix
 % toreshape = [repmat(torep, [1,Q2-1]), 2:M ]; %entire matrix except for first column, strung into a vector of size Q2*Q2*(M-1)
 % othercols = reshape(toreshape, [(M-1)*Q2,Q2])'; 
 % z_dict = [firstcol,othercols];
-
-% My Approach: signal MoG component = M 
-% Assume at most one IC is activated (MoG == M)
-% Should be equivalent to Ying's if M=2 
-% Otherwise, not as computationally advantageous
 
 % Let the Mth MoG component represent "signal", first 1:(M-1) are background
 
@@ -250,11 +243,10 @@ end; %FINISH LOOP OVER VOXELS
 clear miu_sv miu_sv_svT miu_sv1 miu_sv2 miu_s1v_s1vT
 
 %%% UPDATE PARAMETERS
+
 theta_new.nu0_sq = 1/(V*Q) * theta_new.nu0_sq;
 theta_new.A = A_ProdPart1 * inv(A_ProdPart2); %new Ai
 theta_new.A = theta_new.A * real(inv((theta_new.A' * theta_new.A)^(1/2))); % symmetric orthogonalization
-% sd_A = std(Hinv * theta_new.A); %determine scale of A after reverse-prewhitening
-% theta_new.A = theta_new.A * diag(1./sd_A); %standardize scale
 
 %%% UPDATE MOG PARAMETERS
 

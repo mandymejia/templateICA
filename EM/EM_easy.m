@@ -50,8 +50,6 @@ while err > epsilon
     err_A = norm(A_vec_new - A_vec)/norm(A_vec);
     err_nu = abs((theta_new.nu0_sq - theta.nu0_sq))/theta.nu0_sq;
     err = max(err_A, err_nu);
-    % consider looking at the MAX change over parameters rather than the overall change
-    % scale should be fixed across parameters too (norm function doing what?)
 
     fprintf('iteration %6.0f and the difference is  %6.6f for theta \n', itr, err);  
     clear A_vec A_vec_new err_A err_nu;

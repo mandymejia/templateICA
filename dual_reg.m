@@ -1,17 +1,19 @@
 function [S, A, dat_ctr] = dual_reg(dat, S_grp)
-	% USAGE
-	%
-	% [S, A, dat_ctr] = dual_reg(dat, S_grp)
-	%
-	% ARGUMENTS
-	%
-	% dat		Subject-level fMRI data (TxV) 
-	% S_grp 	Group-level independent components (QxV)
-	%
-	% OUTPUT
-	% S 		Subject-level independent components (QxV)
-	% A 		Subject-level mixing matrix (TxQ)
-	% dat_ctr	The row- and column- centered fMRI data
+% USAGE
+%
+% [S, A, dat_ctr] = dual_reg(dat, S_grp)
+%
+% ARGUMENTS
+%
+% dat		Subject-level fMRI data (TxV) 
+% S_grp 	Group-level independent components (QxV)
+%
+%
+% OUTPUT
+%
+% S 		Subject-level independent components (QxV)
+% A 		Subject-level mixing matrix (TxQ)
+% dat_ctr	The row- and column- centered fMRI data
 
 	V = size(dat, 2); %number of voxels
 	T = size(dat, 1); %number of time points
@@ -23,7 +25,7 @@ function [S, A, dat_ctr] = dual_reg(dat, S_grp)
 	if(V ~= size(S_grp, 2)) error('The number of voxels in dat and S_grp must match'); end
 
 	%center timeseries data across space and time and standardize scale
-	dat = dat - mean(dat); %center each voxel time series (centering across time)
+	dat = dat - mean(dat); %center each voxel time series (remove mean image)
 	dat_t = dat'; %transpose image matrix
   	sig = sqrt(mean(var(dat_t))); %variance across image, averaged across time, square root to get SD
   	dat = (dat_t - mean(dat_t))'; %center each image (centering across space)
