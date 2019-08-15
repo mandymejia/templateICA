@@ -1,4 +1,4 @@
-function [A, W, S, skew, iq] = icatb_calculateICA_templateICA(Y, Q, nvox)
+function [A, W, S, skew, iq] = icatb_calc_nuisanceICs(Y, Q, nvox)
 
 % ICA is performed on the reduced data set
 % Inputs:  1) Y: single-subject data matrix of size TxV
@@ -125,7 +125,7 @@ if (strcmpi(parallel_info.mode, 'serial') || parallelCluster)
     
     skew = zeros(1, numOfIC);
     
-    [A, W, icasig, skew] = changeSignOfComponents(A, icasig);
+%     [A, W, icasig, skew] = changeSignOfComponents(A, icasig);
     S = icasig;
 %    parallel_info.mode = 'serial';
 
