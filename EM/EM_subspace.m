@@ -47,9 +47,11 @@ tempICvar(tempICvar < .00001) = .00001; %to prevent problems when inverting cova
 zero_post_z = [];
 
 while err > epsilon
+    tic
     [theta_new, z_mode, subICmean, subICvar, error, zero_post_z_iter] = UpdateTheta_subspace(Y, theta, C_matrix_diag, tempICmean, tempICvar);
     %subICmean, subICvar are mean and variance of subject-specific ICs
     %z-mode indicates which MoG component each voxel belongs to with highest prob
+    toc
 
     zero_post_z = [zero_post_z, zero_post_z_iter];
     if(error == 1)
@@ -65,10 +67,10 @@ while err > epsilon
     err_miu = norm(theta_new.miu - theta.miu)/norm(theta.miu);
     err_sigma_sq = norm(theta_new.sigma_sq - theta.sigma_sq)/norm(theta.sigma_sq);
     err_pi = norm(theta_new.pi - theta.pi)/norm(theta.pi);
-    err_all = [err_A, err_nu, err_miu, err_sigma_sq, err_pi]
+    err_all = [err_A, err_nu, err_miu, err_sigma_sq, err_pi];
     err = max(err_all);
 
-    fprintf('iteration %6.0f and the difference is  %6.6f for theta \n', itr, err);  
+    fprintf('iteration %3.0f and the difference for theta is  %3.3f (A: %6.4f, nu_sq: %6.4f, miu: %6.4f, sigma_sq: %6.4f, pi: %6.4f)\n', itr, err, err_all(1), err_all(2), err_all(3), err_all(4), err_all(5));  
     clear A_vec A_vec_new err_A err_nu;
     theta = theta_new;
     itr = itr + 1;

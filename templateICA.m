@@ -80,7 +80,7 @@ if (~exist('maxiter','var') || isempty(maxiter))
 end;
 if (~exist('epsilon','var') || isempty(epsilon)) 
   epsilon = 0.01; 
-  disp('You did not provide a value for epsilon, so I am setting it to 0.01 (i.e., 1 percent).')
+  disp('You did not provide a value for epsilon, so I am setting it to 0.01.')
 end;
 
 
@@ -110,6 +110,8 @@ if(maxQ > L)
   dat2 = dat - A_temp_DR * S_temp_DR; %dat2 should contain only nuisance ICs
   [~, ~, ~, ~, ~, ~, ~, Q_nuis] = dim_reduce(dat2, 0); %estimate number of nuisance ICs
   if(Q_nuis+L > maxQ) Q_nuis = maxQ - L; end
+
+  disp(strcat('Estimating ', num2str(Q_nuis),' nuisance components'))
 
   %Run Infomax on dat2 to estimate nuisance ICs
   [A_nuis, ~, S_nuis, ~, ~] = icatb_calculateICA_templateICA(dat2, Q_nuis, V);
@@ -191,7 +193,7 @@ if(flag == 1)
   HA_nuis = HA_nuis * diag(1./sd_A);
 
   %theta0.A = [theta0.A, normrnd(0,1,[Q_EM,Q_nuis])]; %use A_nuis here?
-  theta0.A = [theta0.A, HA_nuis]; %use A_nuis here?
+  theta0.A = [theta0.A, HA_nuis];
   theta0.miu = reshape(miu0, [M*Q_nuis, 1]);
   theta0.sigma_sq = reshape(sigma_sq0, [M*Q_nuis, 1]);
   theta0.pi = reshape(pi0, [M*Q_nuis, 1]);

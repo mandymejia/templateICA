@@ -42,16 +42,19 @@ success = 1;
 tempICvar(tempICvar < .00001) = .00001; %to prevent problems when inverting covariance
 
 while err > epsilon
+    tic
     [theta_new, subICmean, subICvar] = UpdateTheta_easy(Y, theta, C_matrix_diag, tempICmean, tempICvar);
     %subICmean, subICvar are mean and variance of subject-specific ICs
- 
+    toc
+
     A_vec = reshape(theta.A, [Q*Q,1]);
     A_vec_new = reshape(theta_new.A, [Q*Q,1]);
     err_A = norm(A_vec_new - A_vec)/norm(A_vec);
     err_nu = abs((theta_new.nu0_sq - theta.nu0_sq))/theta.nu0_sq;
-    err = max(err_A, err_nu);
+    err_all = [err_A, err_nu];
+    err = max(err_all);
 
-    fprintf('iteration %6.0f and the difference is  %6.6f for theta \n', itr, err);  
+    fprintf('iteration %6.0f and the difference for theta is  %6.3f (A: %6.4f, nu_sq: %6.4f)\n', itr, err, err_all(1), err_all(2));  
     clear A_vec A_vec_new err_A err_nu;
     theta = theta_new;
     itr = itr + 1;
