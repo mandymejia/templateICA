@@ -5,11 +5,19 @@ function [template_mean, template_var] = estimate_templates(meas1, meas2)
   % as enough subjects are included, since this function estimates 
   % and removes the noise variance.  
   % 
+  % INPUTS
+  %
   % meas1 - (N x Q x V) array containing estimates of Q ICs for N subjects
   % meas2 - (N x Q x V) array containing estimates of Q ICs for N subjects
+  %
   % N = number of subjects
   % Q = number of ICs
   % V = number of locations (voxels or vertices)
+  %
+  % OUTPUTS
+  %
+  % template_mean – (Q x V) array of estimated population mean of each IC at each location
+  % template_var – (Q x V) array of estimated between-subject (signal) variance of each IC at each location
   %
   % Note:
   % 1. The estimates meas1 and meas2 should be independent, i.e. from repeated 

@@ -1,14 +1,14 @@
 addpath(genpath('~/matlab_toolboxes/cifti-matlab/'))
 addpath(genpath('~/matlab_toolboxes/templateICA/'))
-addpath(genpath('~/matlab_toolboxes/GroupICATv4.0b/icatb')) %for GIFT
 
 data_dir = '/path/to/timeseries/'
 GICA_dir = '/path/to/groupICs/'
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% ESTIMATE TEMPLATE MAPS
+% ESTIMATE TEMPLATE (MEAN AND VARIANCE) MAPS
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% READ IN GROUP ICS (S0)
 
 cd(GICA_dir)
@@ -24,6 +24,7 @@ for q=1:Q
 end
 
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% OBTAIN SUBJECT-LEVEL IC ESTIMATES 
 
 fname_ts1 = 'BOLD_visit1.dtseries.nii'; %file names for voxel time courses from visit 1
@@ -63,7 +64,8 @@ for ii=1:N
 end
 
 
-%%% ESTIMATE MEAN AND VARIANCE MAPS
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% CALCULATE MEAN AND SIGNAL VARIANCE 
 
 [template_mean, template_var] = estimate_templates(maps_visit1, maps_visit2);
 S0 = template_mean;
@@ -80,51 +82,22 @@ cd(newsubj_dir)
 dat = ft_read_cifti(fname_ts1); %structure with field 'dtseries'
 ts = (dat.dtseries)'; %TxV
 
-%perform dual regression to get first noisy estimate of template ICs
+%perform dual regression (for comparison) and center data
 [S_DR, A_DR, ts_ctr] = dual_reg(ts, S0);
 
-%%% ESTIMATE NUISANCE ICS WITH GIFT
+%perform template ICA using fast EM algorithm
+[S_tICA, A_tICA, Q2] = templateICA(ts_ctr, template_mean, template_var, 0, 200); %max 200 ICs
 
-%Remove estimates of template ICs
-ts_resid = ts - A_DR * S_DR;
+%perform template ICA using subspace EM algorithm (WARNING: may be slow!)
+[S_tICA_subspace, A_tICA_subspace, Q2] = templateICA(ts_ctr, template_mean, template_var, 1, 200); %max 200 ICs
 
-%Determine number of nuisance ICs
-[~, ~, ~, ~, ~, ~, ~, Q2] = dim_reduce(ts_resid, 0);
-strcat(num2str(Q2),' nuisance components') 
-
-%Run GIFT to estimate nuisance ICs
-[A_nuis, W, S_nuis, skew, iq] = icatb_calc_nuisanceICs(ts_resid, Q2, V);
-sd_A = std(A_nuis); %determine scale of A
-A_nuis = A_nuis * diag(1./sd_A); %rescale A
-S_nuis = diag(sd_A) * S_nuis; %rescale S
-
-%Subtract nuisance ICs from original timeseries
-ts_nonuis = ts - A_nuis*S_nuis;
-
-%Dimension-reduce data matrix using SVD 
-[ts_nonuis2, H, Hinv, D_Q, U_Q, sigma2_ML, C_diag] = dim_reduce(ts_nonuis, Q); 
-
-%Set parameter starting values
-A_DR_nunuis = ts_nonuis * S0t * inv(S0 * S0t); %initialize A with DR estimate
-HA = H * A_DR_nunuis; %apply dimension reduction
-HA = HA * real(inv((HA' * HA)^(1/2))); %orthogonalize
-sd_A = std(Hinv * HA);  %standardize scale of A (after reverse-prewhitening)
-HA = HA * diag(1./sd_A);
-theta0 = struct('A', HA);
-theta0.nu0_sq = sigma2_ML;
-
-%Run EM algorithm
-maxiter = 100;
-epsilon = .005;
-[theta, S, S_var, success] = EM_easy(template_mean, template_var, ts_nonuis2, theta0, C_diag, maxiter, epsilon);
-A = Hinv * theta.A; %apply reverse dimension reduction 
 
 %S (QxV) contains the template IC estimates 
 %A (TxQ) contains the template IC timeseries 
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% WRITE OUT ESTIMATES AS A CIFTI TIMESERIES FILE
+%% WRITE OUT ESTIMATES AS CIFTI TIMESERIES FILE (USE CONNECTOME WORKBENCH TO VISUALIZE)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %https://github.com/Washington-University/HCPpipelines/tree/master/global/matlab
@@ -135,9 +108,14 @@ wb_cmd = '~/workbench/bin_rh_linux64/wb_command';
 cd(data_dir)
 cd(newsubj_dir)
 S_cifti = ciftiopen(fname_ts1);
-S_cifti.cdata = S_cifti.cdata(:,1:Q).*0;
-S_cifti.cdata = S';
-ciftisavereset(S_cifti, 'S.dscalar.nii', wb_cmd)
+S_cifti.cdata = S_DR';
+ciftisavereset(S_cifti, 'S_DR.dscalar.nii', wb_cmd)
+
+S_cifti.cdata = S_tICA';
+ciftisavereset(S_cifti, 'S_tICA.dscalar.nii', wb_cmd)
+
+S_cifti.cdata = S_tICA_subspace';
+ciftisavereset(S_cifti, 'S_tICA_subspace.dscalar.nii', wb_cmd)
 
 
 
