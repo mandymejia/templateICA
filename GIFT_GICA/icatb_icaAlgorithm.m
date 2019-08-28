@@ -52,7 +52,7 @@ if (nargin > 0 && nargin <= 3)
     if isnumeric(ica_algorithm)
         if ica_algorithm > size(icaAlgo, 1)
             %disp(['Selected algorithm number is : ', num2str(size(icaAlgo, 1)), '. Presently there are ', ...
-                num2str(size(icaAlgo, 1)), ' algorithms. By default selecting the first algorithm.']);
+                %num2str(size(icaAlgo, 1)), ' algorithms. By default selecting the first algorithm.']);
             ica_algorithm = 1;
         end
         selected_ica_algorithm = lower(deblank(icaAlgo(ica_algorithm, :))); % selected ICA algorithm

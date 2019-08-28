@@ -163,7 +163,7 @@ k=0; index=[];
 for i=1:M,
     %clc;
     %fprintf('\n\n%s\n\n',['Randomization using ', algorithmName, ': Round ' num2str(i) '/' ...
-        num2str(M)]);
+        %num2str(M)]);
 
     switch mode
         case 'randinit'
