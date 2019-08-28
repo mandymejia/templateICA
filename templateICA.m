@@ -1,7 +1,9 @@
 function [S, A, Q_nuis] = templateICA(dat, tempICmean, tempICvar, flag, maxQ, maxiter, epsilon)
-
+% Usage: [S, A, Q_nuis] = templateICA(dat, tempICmean, tempICvar, flag, maxQ, maxiter, epsilon)
+%
 % Performs centering, dimension reduction, gets starting values, and calls EM_easy or EM_subspace
 %
+% 
 % ARGUMENTS
 %
 % dat        - (TxV) matrix of fMRI data
@@ -106,15 +108,21 @@ if(maxQ > L)
 
   %To estimate number of nuisance ICs, first estimate and remove template ICs (more accurate than estimating the total number of ICs)
 
+  fprintf('\nESTIMATING NUMBER OF OF NUISANCE COMPONENTS...:')
+
   %Remove A*S from data to estimate nuisance ICs
   dat2 = dat - A_temp_DR * S_temp_DR; %dat2 should contain only nuisance ICs
   [~, ~, ~, ~, ~, ~, ~, Q_nuis] = dim_reduce(dat2, 0); %estimate number of nuisance ICs
   if(Q_nuis+L > maxQ) Q_nuis = maxQ - L; end
 
-  disp(strcat('Estimating ', num2str(Q_nuis),' nuisance components'))
+  fprintf('%4.0f \n', Q_nuis)
+  
+  fprintf('\nRUNNING GIFT TO OBTAIN INITIAL ESTIMATES OF NUISANCE COMPONENTS...\n')
 
   %Run Infomax on dat2 to estimate nuisance ICs
-  [A_nuis, ~, S_nuis, ~, ~] = icatb_calculateICA_templateICA(dat2, Q_nuis, V);
+  tic
+  [A_nuis, ~, S_nuis, ~, ~] = icatb_calc_nuisanceICs(dat2, Q_nuis, V);
+  toc
   sd_A = std(A_nuis); %determine scale of A
   A_nuis = A_nuis * diag(1./sd_A); %rescale A
   S_nuis = diag(sd_A) * S_nuis; %rescale S
@@ -161,6 +169,8 @@ end
 %%% DIMENSION REDUCTION
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+fprintf('\nPERFORMING DIMENSION REDUCTION\n')
+
 %Y_ij2 is dimension-reduced data (QxV)
 %H is dimension reduction matrix
 %Hinv is reverse dimension reduction matrix
@@ -173,6 +183,7 @@ end
 %%% INITIALIZE PARAMETER STARTING VALUES 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+fprintf('\nSETTING INITIAL PARAMETER VALUES\n')
 
 % MIXING MATRIX 
 [~, A_temp_init, ~] = dual_reg(dat3, tempICmean); %initialize A with DR estimate
@@ -204,6 +215,8 @@ end
 %%%% RUN EM ALGORITHM UNTIL CONVERGENCE
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+fprintf('\nRUNNING EM-ALGORITHM...\n')
+
 % FAST EM ALGORITHM
 
 if(flag ~= 1)
@@ -212,12 +225,18 @@ if(flag ~= 1)
   %S_temp is the estimated template ICs
   %S_temp_var is the estimation variance (squared standard errors) of the ICs
   %success is a flag for algorithm convergence
+  tic
   [theta, S_temp, S_temp_var, success] = EM_easy(tempICmean, tempICvar, dat4, theta0, C_diag, maxiter, epsilon);
+  toc
   A_temp = Hinv * theta.A; %reverse dimension reduction to get TxQ mixing matrix
+
+  fprintf('\nRE-ESTIMATING NUISANCE COMPONENTS WITH GIFT...\n')
 
   %Re-estimate S_nuis and A_nuis and scale
   dat2 = dat - A_temp * S_temp;
-  [A_nuis, ~, S_nuis, ~, ~] = icatb_calculateICA_templateICA(dat2, Q_nuis, V);
+  tic
+  [A_nuis, ~, S_nuis, ~, ~] = icatb_calc_nuisanceICs(dat2, Q_nuis, V);
+  toc
   sd_A = std(A_nuis); %determine scale of A
   A_nuis = A_nuis * diag(1./sd_A); %rescale A
   S_nuis = diag(sd_A) * S_nuis; %rescale S
@@ -234,10 +253,12 @@ else
   %S is the estimated template and nuisance ICs
   %S_temp_var is the estimation variance (squared standard errors) of the ICs
   %success is a flag for algorithm convergence
+  tic
   [theta, S, S_var, success] = EM_subspace(tempICmean, tempICvar, dat4, theta0, C_diag, maxiter, epsilon);
+  toc
   A = Hinv * theta.A; %reverse dimension reduction to get TxQ mixing matrix
 
 end
 
+fprintf('\nDONE!\n')
 
-%end;
