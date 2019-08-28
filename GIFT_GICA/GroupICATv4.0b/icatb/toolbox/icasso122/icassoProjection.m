@@ -159,7 +159,7 @@ end
 
 D=feval(sim2dis,sR.cluster.similarity);
 
-disp([char(13) 'Projection, using ' upper(method) char(13)]);
+% disp([char(13) 'Projection, using ' upper(method) char(13)]);
 
 switch method 
  case 'mmds'

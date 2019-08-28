@@ -123,9 +123,8 @@ if (strcmpi(parallel_info.mode, 'serial') || parallelCluster)
     
     clear sR;
     
-    skew = zeros(1, numOfIC);
-    
-    %[A, W, icasig, skew] = changeSignOfComponents(A, icasig);
+    % skew = zeros(1, numOfIC);  
+    % [A, W, icasig, skew] = changeSignOfComponents(A, icasig);
     S = icasig;
 %    parallel_info.mode = 'serial';
 
