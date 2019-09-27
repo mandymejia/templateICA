@@ -26,28 +26,26 @@ end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% OBTAIN SUBJECT-LEVEL IC ESTIMATES 
+S = 100; %number of subjects to use in template estimation
 
-fname_ts1 = 'BOLD_visit1.dtseries.nii'; %file names for voxel time courses from visit 1
-fname_ts2 = 'BOLD_visit2.dtseries.nii'; %file names for voxel time courses from visit 2
+fname_ts1 = 'BOLD_visit1.dtseries.nii'; %file names for voxel time courses from visit 1; saved in subject-specific directories
+fname_ts2 = 'BOLD_visit2.dtseries.nii'; %file names for voxel time courses from visit 2; saved in subject-specific directories
 
+%initialize subject-level maps
 maps_visit1 = zeros(S,Q,V);
 maps_visit2 = zeros(S,Q,V);
 
 %for running subjects in parallel
 %parpool(12, 'IdleTimeout', Inf) %set parallel pool to never time out
 
-N = 100; %number of subjects used to estimate templates
-
-%parfor ii=1:N
-for ii=1:N
+%parfor ii=1:S
+for ii=1:S
+  fprintf('working on %d of %d', ii, S)
 
   subject_dir = strcat('subject',num2str(ii));
-  
-  cd(data_dir)
-  cd(subject_dir)
 
-  dat1 = ft_read_cifti(fname_ts1); %structure with field 'dtseries'
-  dat2 = ft_read_cifti(fname_ts2); %structure with field 'dtseries'
+  dat1 = ft_read_cifti(fullfile(data_dir, subject_dir, fname_ts1)); %structure with field 'dtseries'
+  dat2 = ft_read_cifti(fullfile(data_dir, subject_dir, fname_ts2)); %structure with field 'dtseries'
 
   ts1 = (dat1.dtseries)'; %TxV
   ts2 = (dat2.dtseries)'; %TxV
