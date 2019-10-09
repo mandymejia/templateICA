@@ -121,7 +121,7 @@ if(maxQ > L)
 
   %Run Infomax on dat2 to estimate nuisance ICs
   tic
-  [A_nuis, ~, S_nuis, ~, ~] = icatb_calc_nuisanceICs(dat2, Q_nuis, V);
+  [A_nuis, ~,S_nuis, ~] = icatb_calc_nuisanceICs(dat2, Q_nuis, V);
   toc
   sd_A = std(A_nuis); %determine scale of A
   A_nuis = A_nuis * diag(1./sd_A); %rescale A
@@ -235,7 +235,7 @@ if(flag ~= 1)
   %Re-estimate S_nuis and A_nuis and scale
   dat2 = dat - A_temp * S_temp;
   tic
-  [A_nuis, ~, S_nuis, ~, ~] = icatb_calc_nuisanceICs(dat2, Q_nuis, V);
+  [A_nuis, ~, S_nuis, ~] = icatb_calc_nuisanceICs(dat2, Q_nuis, V);
   toc
   sd_A = std(A_nuis); %determine scale of A
   A_nuis = A_nuis * diag(1./sd_A); %rescale A
