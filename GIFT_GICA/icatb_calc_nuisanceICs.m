@@ -1,4 +1,4 @@
-function [A, W, S, skew, iq] = icatb_calc_nuisanceICs(Y, Q, nvox)
+function [A, W, S, iq] = icatb_calc_nuisanceICs(Y, Q, nvox)
 
 % ICA is performed on the reduced data set
 % Inputs:  1) Y: single-subject data matrix of size TxV
