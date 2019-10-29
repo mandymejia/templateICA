@@ -1,9 +1,8 @@
 # templateICA
-MATLAB toolbox implementing template Independent Component Analysis (tICA)
+
+**MATLAB toolbox implementing template Independent Component Analysis (tICA)**
 
 These files support the manuscript [Template Independent Component Analysis: Targeted and Reliable Estimation of Subject-level Brain Networks using Big Data Population Priors](https://doi.org/10.1080/01621459.2019.1679638)
-
-If running the Fast Two-Stage EM algorithm, requires the [Group ICA of fMRI Toolbox](http://mialab.mrn.org/software/gift) to estimate nuisance ICs a-priori. 
 
 The user is responsible for reading and writing brain image files, which can be in any format (e.g. NIFTI, CIFTI, GIFTI). The Example.m script uses CIFTI files and relies on the [cifti-matlab repository](https://github.com/Washington-University/cifti-matlab). 
 
@@ -13,7 +12,6 @@ Main function `templateICA`, used to fit the template ICA model using an expecta
 
 ## Example.m
 Example script that illustrates template estimation and template ICA model fitting.  
-
 
 ## EM subdirectory
 Contains all functions for running the fast and subspace EM algorithms, called by the main `templateICA` function.
