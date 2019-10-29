@@ -11,7 +11,7 @@ The user is responsible for reading and writing brain image files, which can be 
 Main function `templateICA`, used to fit the template ICA model using an expectation-maximization (EM) algorithm, given a set of templates.  Two EM algorithms presented in the paper are implemented: the fast two-stage EM algorithm (default) and the subspace EM algorithm.  Templates must first be estimated using the `estimate_templates` function, based on a holdout or external dataset. 
 
 ## Example.m
-Example script that illustrates template estimation and template ICA model fitting.  
+Example script that illustrates template estimation using `estimate_templates` and template ICA model fitting using `templateICA` with both the fast and subspace EM algorithms.  
 
 ## EM subdirectory
 Contains all functions for running the fast and subspace EM algorithms, called by the main `templateICA` function.
