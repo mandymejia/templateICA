@@ -18,6 +18,7 @@ function [S, S_var, A, Q_nuis] = templateICA(dat, tempICmean, tempICvar, flag, m
 % RETURNS
 %
 % S      - (QxV) matrix of IC estimates (template|nuisance)
+% S_var  - (QxV) matrix of IC variance estimates (template|nuisance) -- nuisance variance will be NaN for EM_easy
 % A      - (TxQ) mixing matrix
 % Q_nuis - how many nuisance ICs estimated
 
