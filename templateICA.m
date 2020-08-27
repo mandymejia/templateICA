@@ -1,5 +1,5 @@
-function [S, A, Q_nuis] = templateICA(dat, tempICmean, tempICvar, flag, maxQ, maxiter, epsilon)
-% Usage: [S, A, Q_nuis] = templateICA(dat, tempICmean, tempICvar, flag, maxQ, maxiter, epsilon)
+function [S, S_var, A, Q_nuis] = templateICA(dat, tempICmean, tempICvar, flag, maxQ, maxiter, epsilon)
+% Usage: [S, S_var, A, Q_nuis] = templateICA(dat, tempICmean, tempICvar, flag, maxQ, maxiter, epsilon)
 %
 % Performs centering, dimension reduction, gets starting values, and calls EM_easy or EM_subspace
 %
@@ -241,8 +241,13 @@ if(flag ~= 1)
   A_nuis = A_nuis * diag(1./sd_A); %rescale A
   S_nuis = diag(sd_A) * S_nuis; %rescale S
 
+  %Set nuisance component variances to NaN
+  dims = size(S_nuis);
+  S_nuis_var = nan(dims(1), dims(2));
+
   %Combine template and nuisance ICs
   S = [S_temp; S_nuis];
+  S_var = [S_temp_var; S_nuis_var];
   A = [A_temp, A_nuis];
 
 else
