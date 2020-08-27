@@ -1,22 +1,23 @@
 # templateICA
-MATLAB toolbox implementing template independent component analysis
 
-These files support the working manuscript [Template Independent Component Analysis: Targeted and Reliable Estimation of Subject-level Brain Networks using Big Data Population Priors](https://arxiv.org/abs/1906.07294)
+**MATLAB toolbox implementing template Independent Component Analysis (tICA)**
 
-Requires the [cifti-matlab repository](https://github.com/Washington-University/cifti-matlab) to read and write cifti files. If running the Fast Two-Stage EM algorithm, requires the [Group ICA of fMRI Toolbox](http://mialab.mrn.org/software/gift) to estimate nuisance ICs a-priori. 
+These files support the manuscript [Template Independent Component Analysis: Targeted and Reliable Estimation of Subject-level Brain Networks using Big Data Population Priors](https://doi.org/10.1080/01621459.2019.1679638)
+
+The user is responsible for reading and writing brain image files, which can be in any format (e.g. NIFTI, CIFTI, GIFTI). The Example.m script uses CIFTI files and relies on the [cifti-matlab repository](https://github.com/Washington-University/cifti-matlab). 
+
+
+## templateICA.m
+Main function `templateICA`, used to fit the template ICA model using an expectation-maximization (EM) algorithm, given a set of templates.  Two EM algorithms presented in the paper are implemented: the fast two-stage EM algorithm (default) and the subspace EM algorithm.  Templates must first be estimated using the `estimate_templates` function, based on a holdout or external dataset. 
+
+## Example.m
+Example script that illustrates template estimation using `estimate_templates` and template ICA model fitting using `templateICA` with both the fast and subspace EM algorithms.  
 
 ## EM subdirectory
-Contains all functions for running the exact, subspace, and fast versions of the EM algorithm
+Contains all functions for running the fast and subspace EM algorithms, called by the main `templateICA` function.
 
 ## GIFT_GICA subdirectory
-Contains functions for estimating nuisance ICs apriori
-
-### icatb_calc_nuisanceICs.m - helper function 
-Called by Example.m
-
-Estimates nuisance ICs a-priori using the Infomax algorithm and the ICASSO toolbox with randomized initial conditions to ensure stable ICs. 
-
-Uses the following files (which you should not have to modify):
+Contains functions for estimating nuisance ICs a-priori using the Infomax algorithm and the ICASSO toolbox with randomized initial conditions to ensure stable ICs. Contains the following files, called by the main `templateICA` function:
 -	icatb_v_pca.m - compute covariance matrix and calculate the eigen values and eigen vectors without printing progress messages to the calling screen
 -	icatb_v_whiten.m - calculate the whitening and dewhitening matrices (straight from GIFT)
 -	icatb_icassoEst.m
