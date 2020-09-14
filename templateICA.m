@@ -118,15 +118,25 @@ if(maxQ > L)
 
   fprintf('%4.0f \n', Q_nuis)
   
-  fprintf('\nRUNNING GIFT TO OBTAIN INITIAL ESTIMATES OF NUISANCE COMPONENTS...\n')
-
+  %Instead of estimating nuisance ICs, just estimate nuisance PCs. The residual is the exact same because the ICs are a rotation of the PCs
+  %If nuisance ICs are not of interest, can take this approach
+  fprintf('\nEstimating nuisance PCs of no-interest...\n')  
+  [nuiU, nuiD, nuiV] = svds(dat2'*dat2, Q_nuis);
+  
+  %instead of multiplying the inverse of the diagonal matrix of singular values (nuiD) by nuiU' (singular vectors), use \ operator
+  vmat = nuiD\nuiU' * dat2;
+  
+  fit = nuiU * nuiD * vmat;
+  
+  %fprintf('\nRUNNING GIFT TO OBTAIN INITIAL ESTIMATES OF NUISANCE COMPONENTS...\n')
   %Run Infomax on dat2 to estimate nuisance ICs
-  tic
-  [A_nuis, ~,S_nuis, ~] = icatb_calc_nuisanceICs(dat2, Q_nuis, V);
-  toc
-  sd_A = std(A_nuis); %determine scale of A
-  A_nuis = A_nuis * diag(1./sd_A); %rescale A
-  S_nuis = diag(sd_A) * S_nuis; %rescale S
+  %tic
+  %[A_nuis, ~,S_nuis, ~] = icatb_calc_nuisanceICs(dat2, Q_nuis, V);
+  %toc
+  
+  %sd_A = std(A_nuis); %determine scale of A
+  %A_nuis = A_nuis * diag(1./sd_A); %rescale A
+  %S_nuis = diag(sd_A) * S_nuis; %rescale S
 
 
   %%% DEAL WITH NUISANCE ICS (*how* depends on algorithm used)
@@ -135,7 +145,8 @@ if(maxQ > L)
 
   if(flag~=1) 
     
-    dat3 = dat - A_nuis*S_nuis; %run EM on data with nuisance ICs removed
+    %dat3 = dat - A_nuis*S_nuis; %run EM on data with nuisance ICs removed
+    dat3 = dat - fit;
     Q_EM = L; %number of ICs to estimate with EM (= number of PCs to keep)
 
   %%% Subspace EM: Use estimated nuisance ICs to get MoG starting values
