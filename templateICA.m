@@ -242,13 +242,14 @@ if(flag ~= 1)
   A_nuis = A_nuis * diag(1./sd_A); %rescale A
   S_nuis = diag(sd_A) * S_nuis; %rescale S
 
-  %Set nuisance component variances to NaN
-  dims = size(S_nuis);
-  S_nuis_var = nan(dims(1), dims(2));
-
   %Combine template and nuisance ICs
   S = [S_temp; S_nuis];
-  S_var = [S_temp_var; S_nuis_var];
+  
+  %get variances from covariance matrix
+  cov2 = reshape(S_temp_var, [], size(S_temp_var, 3));
+  selector = diag(true(size(S_temp_var, 1), 1));
+  S_var = cov2(selector(:), :);
+  
   A = [A_temp, A_nuis];
 
 else
